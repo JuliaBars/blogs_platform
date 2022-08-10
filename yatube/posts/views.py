@@ -42,19 +42,18 @@ def profile(request, username):
     posts = author.posts.all()
     n_posts = posts.count()
     following = (
-        request.user.is_authenticated and
-        Follow.objects.filter(
-        user=request.user,
-        author=author
-    ).exists()
+        request.user.is_authenticated
+        and Follow.objects.filter(
+            user=request.user,
+            author=author
+        ).exists()
     )
     context = {
         'page_obj': paginator(request, posts),
         'author': author,
         'n_posts': n_posts,
         'following': following,
-
-        }
+    }
     return render(request, 'posts/profile.html', context)
 
 

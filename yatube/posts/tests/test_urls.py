@@ -98,7 +98,7 @@ class PostURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_comment_page_for_authorized_only(self):
-        """Комментировать посты может только 
+        """Комментировать посты может только
         авторизованный пользователь."""
         response = self.not_author_client.get(
             f'/posts/{self.post.id}/comment/',

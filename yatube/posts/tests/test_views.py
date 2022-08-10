@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
 
-from ..models import Group, Post, Follow, Comment
+from ..models import Group, Post, Follow
 
 
 User = get_user_model()
@@ -108,7 +108,10 @@ class PostPagesTests(TestCase):
                 post_list = Post.objects.all()
                 for post in response.context['page_obj'].object_list:
                     if post is self.post:
-                        self.assertEqual(post_list[0].image, post_context[0].image)
+                        self.assertEqual(
+                            post_list[0].image,
+                            post_context[0].image
+                        )
 
     def test_new_post_page_show_correct_context(self):
         """Форма создания поста сформирована с правильным контекстом."""
@@ -266,24 +269,30 @@ class PostPagesTests(TestCase):
             response.context['page_obj'].object_list[0],
             Post.objects.all()
         )
-    
+
     def test_unfollowing_clean_index_page(self):
         """Если отписаться,
         то посты исчезнут со страницы подписок."""
-        response_before = self.authorized_client.get(reverse('posts:follow_index'))
+        response_before = self.authorized_client.get(
+            reverse('posts:follow_index')
+        )
         PostPagesTests.subscribe.delete()
-        response_after = self.authorized_client.get(reverse('posts:follow_index'))
+        response_after = self.authorized_client.get(
+            reverse('posts:follow_index')
+        )
         self.assertNotEqual(response_before.content, response_after.content)
 
     def test_unfollow_index_page(self):
-        """Если пользователь не подписан на автора, 
+        """Если пользователь не подписан на автора,
         то постов автора на странице его подписок нет."""
-        response = self.authorized_unfollower.get(reverse('posts:follow_index'))
+        response = self.authorized_unfollower.get(
+            reverse('posts:follow_index')
+        )
         self.assertNotIn(Post.objects.filter(
-                author=PostPagesTests.follow_user,
-                text='Пост, созданный для проверки подписок',
-            ),
-            response.context['page_obj'],  
+            author=PostPagesTests.follow_user,
+            text='Пост, созданный для проверки подписок',
+        ),
+            response.context['page_obj'],
         )
 
 
