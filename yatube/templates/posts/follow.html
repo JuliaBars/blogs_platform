@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Персональные рекомендации{% endblock title %}
+{% block header %}Персональные рекомендации{% endblock header %}
+{% block content %}
+  {% include 'includes/switcher.html' %}
+  {% for post in page_obj %}
+    {% include 'includes/post.html' %}
+  {% endfor %} 
+{% endblock content %}
