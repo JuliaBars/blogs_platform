@@ -62,11 +62,6 @@ class PostPagesTests(TestCase):
             content=cls.picture_for_post,
             content_type='image/gif'
         )
-        cls.new_post = Post.objects.create(
-            author=cls.follow_user,
-            text='Пост, созданный для проверки подписок',
-            group=cls.group,
-        )
         cls.post = Post.objects.create(
             author=cls.user,
             text='Пост, созданный лишь для проверки кода',
@@ -104,14 +99,8 @@ class PostPagesTests(TestCase):
         for url in urls:
             with self.subTest(url=url):
                 response = self.authorized_client.get(url)
-                post_context = response.context['page_obj'].object_list
-                post_list = Post.objects.all()
-                for post in response.context['page_obj'].object_list:
-                    if post is self.post:
-                        self.assertEqual(
-                            post_list[0].image,
-                            post_context[0].image
-                        )
+                post = response.context['page_obj'][0]
+                self.assertEqual(post.image, 'posts/picture_for_post.gif')
 
     def test_new_post_page_show_correct_context(self):
         """Форма создания поста сформирована с правильным контекстом."""
@@ -240,102 +229,3 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(reverse('posts:index'))
         self.assertNotEqual(response.context.get('page_obj')[0].group,
                             self.group_2)
-
-    def test_cach_in_index_page(self):
-        """Проверяем кеширование главной страницы."""
-        response = self.authorized_client.get(reverse('posts:index'))
-        with_cache = response.content
-        Post.objects.all().delete()
-        response = self.authorized_client.get(reverse('posts:index'))
-        after_clearing_the_cache = response.content
-        self.assertEqual(
-            with_cache,
-            after_clearing_the_cache
-        )
-        cache.clear()
-        response = self.authorized_client.get(reverse('posts:index'))
-        after_clearing_the_cache = response.content
-        self.assertNotEqual(
-            with_cache,
-            after_clearing_the_cache
-        )
-
-    def test_follow_index_page(self):
-        """Если создать подписку,
-        то посты на странице подписок авторизованного
-        пользователя появляются."""
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        self.assertIn(
-            response.context['page_obj'].object_list[0],
-            Post.objects.all()
-        )
-
-    def test_unfollowing_clean_index_page(self):
-        """Если отписаться,
-        то посты исчезнут со страницы подписок."""
-        response_before = self.authorized_client.get(
-            reverse('posts:follow_index')
-        )
-        PostPagesTests.subscribe.delete()
-        response_after = self.authorized_client.get(
-            reverse('posts:follow_index')
-        )
-        self.assertNotEqual(response_before.content, response_after.content)
-
-    def test_unfollow_index_page(self):
-        """Если пользователь не подписан на автора,
-        то постов автора на странице его подписок нет."""
-        response = self.authorized_unfollower.get(
-            reverse('posts:follow_index')
-        )
-        self.assertNotIn(Post.objects.filter(
-            author=PostPagesTests.follow_user,
-            text='Пост, созданный для проверки подписок',
-        ),
-            response.context['page_obj'],
-        )
-
-
-class PaginatorViewsTest(TestCase):
-    """Тестируем паджинатор."""
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.group = Group.objects.create(
-            title='Название группы',
-            slug='group-name-slug'
-        )
-        cls.author = User.objects.create_user(username='post_author')
-        cls.posts = []
-        for i in range(14):
-            cls.posts.append(Post.objects.create(
-                text=f'Какой-то текст поста {i}',
-                author=cls.author,
-                group=cls.group
-            ))
-
-    def setUp(self):
-        self.authorized_client = Client()
-        self.authorized_client.force_login(PaginatorViewsTest.author)
-        cache.clear()
-
-    def url(self, url, **kwargs):
-        return reverse(url, kwargs=kwargs)
-
-    def test_page_contains_not_more_than_ten_records(self):
-        """Паджинатор выводит на одну страницу не более 10 постов."""
-        reverse_url = {
-            self.url('posts:index'): 10,
-            self.url('posts:group_list', slug=self.group.slug): 10,
-            self.url('posts:profile', username=self.author.username): 10,
-            self.url(
-                'posts:profile', username=self.author.username
-            ) + '?page=2': 4,
-        }
-        for url, number_of_posts in reverse_url.items():
-            response = self.authorized_client.get(url)
-            with self.subTest(key=url):
-                self.assertEqual(len(
-                    response.context['page_obj']),
-                    number_of_posts
-                )

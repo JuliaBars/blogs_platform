@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.core.cache import cache
 
 from ..models import Group, Post
 
@@ -21,6 +22,9 @@ class PostModelTest(TestCase):
             group=cls.group,
             text='Не более 15 символов может поместиться в превью поста',
         )
+
+    def setUp(self) -> None:
+        cache.clear()
 
     def test_verbose_name(self):
         """Verbose_name в полях модели Post совпадает с ожидаемым."""

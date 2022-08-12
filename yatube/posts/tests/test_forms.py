@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, override_settings, TestCase
 from django.urls import reverse
+from django.core.cache import cache
 
 
 User = get_user_model()
@@ -34,7 +35,7 @@ class PostCreateFormTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+        shutil.rmtree(TEMP_MEDIA_ROOT)
 
     def setUp(self):
         self.guest_client = Client()
@@ -53,6 +54,8 @@ class PostCreateFormTests(TestCase):
             content=self.picture_for_post,
             content_type='image/gif'
         )
+
+        cache.clear()
 
     def url(self, url, **kwargs):
         return reverse(url, kwargs=kwargs)

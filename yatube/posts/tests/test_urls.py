@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.core.cache import cache
 
 from http import HTTPStatus
 
@@ -47,6 +48,8 @@ class PostURLTests(TestCase):
         self.not_author_client = Client()
         self.not_author_client.force_login(PostURLTests.not_author)
 
+        cache.clear()
+
     def url(self, url, **kwargs):
         return reverse(url, kwargs=kwargs)
 
@@ -73,11 +76,12 @@ class PostURLTests(TestCase):
                 self.assertTemplateUsed(response, template)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_castome_pages_for_BadRequest_use_correct_template(self):
-        """Кастомные странички ошибок
-        используют правильные шаблоны."""
+    def test_bad_request_page_works_properly(self):
+        """Несуществующая страница отдает код 404
+        и кастомный шаблон."""
         response = self.guest_client.get('page_not_found')
         self.assertTemplateUsed(response, 'core/404.html')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_private_pages_use_correct_template(self):
         """Странички с приватным доступом используют
@@ -92,11 +96,6 @@ class PostURLTests(TestCase):
                 response = self.author_client.get(url)
                 self.assertTemplateUsed(response, 'posts/create_post.html')
 
-    def test_unexisting_page_404(self):
-        """Несуществующая страница дает код 404."""
-        response = self.guest_client.get('/unexisting_page/')
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
     def test_comment_page_for_authorized_only(self):
         """Комментировать посты может только
         авторизованный пользователь."""
@@ -107,7 +106,7 @@ class PostURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_cooment_page_not_for_anonymous(self):
-        """При попытке сделать комментарий неавторизовнный
+        """При попытке сделать комментарий неавторизованный
         пользователь будет перенаправлен на страницу
         авторизации."""
         response = self.guest_client.get(

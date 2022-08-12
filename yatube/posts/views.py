@@ -77,13 +77,7 @@ def post_create(request):
     """Страница создания постов для авторизованных пользователей."""
     form = PostForm(request.POST or None, files=request.FILES or None)
 
-    if not request.method == 'POST':
-        context = {
-            'form': form
-        }
-        return render(request, 'posts/create_post.html', context)
-
-    if not form.is_valid():
+    if not request.method == 'POST' or not form.is_valid():
         context = {
             'form': form
         }
@@ -152,12 +146,8 @@ def follow_index(request):
 def profile_follow(request, username):
     """Подписка на автора со страницы его профиля."""
     author = get_object_or_404(User, username=username)
-    follow_exist = Follow.objects.filter(
-        user=request.user,
-        author=author
-    )
-    if not author == request.user and not follow_exist:
-        Follow.objects.create(user=request.user, author=author)
+    if author != request.user:
+        Follow.objects.get_or_create(user=request.user, author=author)
 
     return redirect('posts:profile', username=username)
 
