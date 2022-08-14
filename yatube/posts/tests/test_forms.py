@@ -21,14 +21,13 @@ class PostCreateFormTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.group = Group.objects.create(
-            title='Название группы',
-            description='Описание группы',
-            slug='group-name-slug'
+            title='Новая группа',
+            slug='group-slug'
         )
         cls.author = User.objects.create_user(username='author')
         cls.post = Post.objects.create(
             author=cls.author,
-            text='Пост созданный для проверки кода',
+            text='Пост автора',
         )
         cls.form = PostForm()
 
@@ -61,8 +60,7 @@ class PostCreateFormTests(TestCase):
         return reverse(url, kwargs=kwargs)
 
     def test_create_post(self):
-        """Валидная форма создает новый пост
-        и общее количество постов увеличивается на 1."""
+        """Новый пост с картинкой успешно создается."""
         posts_count = Post.objects.count()
         form_data = {
             'text': 'Новый пост с новым текстом',

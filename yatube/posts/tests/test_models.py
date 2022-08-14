@@ -11,12 +11,8 @@ class PostModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='auth')
-        cls.group = Group.objects.create(
-            title='Название группы',
-            description='Описание группы',
-            slug='group-name-slug'
-        )
+        cls.user = User.objects.create_user(username='author')
+        cls.group = Group.objects.create(slug='group-slug')
         cls.post = Post.objects.create(
             author=cls.user,
             group=cls.group,

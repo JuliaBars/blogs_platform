@@ -13,35 +13,14 @@ User = get_user_model()
 class PostURLTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        """Создаем фикстуры:
-
-            user: неавторизованный пользователь,
-            author: авторизованный автор,
-            not_author: авторизованный не автор,
-            group: группа,
-            post: пост
-        """
         super().setUpClass()
-        cls.user = User.objects.create_user(username='HasNoName')
+        cls.user = User.objects.create_user('user')
         cls.author = User.objects.create_user(username='author')
         cls.not_author = User.objects.create_user(username='not_author')
-        cls.group = Group.objects.create(
-            title='Название группы',
-            description='Описание группы',
-            slug='group-name-slug'
-        )
-        cls.post = Post.objects.create(
-            author=cls.author,
-            text='Пост созданный лишь для проверки кода',
-        )
+        cls.group = Group.objects.create(slug='group-slug')
+        cls.post = Post.objects.create(author=cls.author, text='Пост автора')
 
     def setUp(self) -> None:
-        """Создаем тестовых веб-клиентов:
-
-            guest_client: неавторизованный пользователь,
-            author_client: авторизованный автор поста,
-            not_author_client: авторизованный не автор поста
-        """
         self.guest_client = Client()
         self.author_client = Client()
         self.author_client.force_login(PostURLTests.author)
@@ -106,7 +85,7 @@ class PostURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_cooment_page_not_for_anonymous(self):
-        """При попытке сделать комментарий неавторизованный
+        """При попытке оставить комментарий неавторизованный
         пользователь будет перенаправлен на страницу
         авторизации."""
         response = self.guest_client.get(

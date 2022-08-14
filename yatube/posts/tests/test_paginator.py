@@ -10,26 +10,26 @@ User = get_user_model()
 
 
 class PaginatorViewsTest(TestCase):
-    """Тестируем паджинатор."""
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.group = Group.objects.create(
-            title='Название группы',
-            slug='group-name-slug'
+            title='Новая группа',
+            slug='group-slug'
         )
-        cls.author = User.objects.create_user(username='post_author')
+        cls.author = User.objects.create_user('post_author')
         cls.posts = []
         for i in range(14):
             cls.posts.append(Post.objects.create(
-                text=f'Какой-то текст поста {i}',
+                text=f'Текст нового поста {i}',
                 author=cls.author,
                 group=cls.group
             ))
 
     def setUp(self):
-        self.authorized_client = Client()
-        self.authorized_client.force_login(PaginatorViewsTest.author)
+        self.authorized_author = Client()
+        self.authorized_author.force_login(PaginatorViewsTest.author)
+
         cache.clear()
 
     def url(self, url, **kwargs):
@@ -46,7 +46,7 @@ class PaginatorViewsTest(TestCase):
             ) + '?page=2': 4,
         }
         for url, number_of_posts in reverse_url.items():
-            response = self.authorized_client.get(url)
+            response = self.authorized_author.get(url)
             with self.subTest(key=url):
                 self.assertEqual(len(
                     response.context['page_obj']),
