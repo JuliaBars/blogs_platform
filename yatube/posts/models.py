@@ -1,6 +1,6 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
-from django.contrib.auth import get_user_model
 from .validators import validate_not_empty
 
 User = get_user_model()
@@ -115,4 +115,4 @@ class Follow(models.Model):
         ]
 
     def __str__(self):
-        return self.user
+        return f'{self.user} подписался на {self.author}'

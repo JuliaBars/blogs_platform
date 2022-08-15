@@ -1,16 +1,16 @@
 import shutil
 import tempfile
 
-from django.contrib.auth import get_user_model
-from django.test import Client, TestCase, override_settings
-from django.urls import reverse
 from django import forms
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
-
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase, override_settings
+from django.urls import reverse
 from posts.models import Group, Post
 
+from .factories import url_rev
 
 User = get_user_model()
 
@@ -58,16 +58,13 @@ class PostPagesTests(TestCase):
 
         cache.clear()
 
-    def url(self, url, **kwargs):
-        return reverse(url, kwargs=kwargs)
-
     def test_pages_show_picture_in_context(self):
         """Шаблоны страниц передают в контексте изображение,
         загруженное пользователем."""
         urls = [
-            self.url('posts:index'),
-            self.url('posts:profile', username=self.user.username),
-            self.url('posts:group_list', slug=self.group.slug),
+            url_rev('posts:index'),
+            url_rev('posts:profile', username=self.user.username),
+            url_rev('posts:group_list', slug=self.group.slug),
         ]
 
         for url in urls:
@@ -80,7 +77,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст post_detail -
         один пост, выбранный по id и картинка."""
         response = self.authorized_client.get(
-            self.url('posts:post_detail', post_id=self.post.id)
+            url_rev('posts:post_detail', post_id=self.post.id)
         )
         first_post = response.context['post']
         post_text = first_post.text
@@ -91,11 +88,11 @@ class PostPagesTests(TestCase):
     def test_pages_uses_correct_template(self):
         """Во view-функциях используются правильные html-шаблоны."""
         urls = [
-            self.url('posts:index'),
-            self.url('posts:profile', username=self.user.username),
-            self.url('posts:group_list', slug=self.group.slug),
-            self.url('posts:post_detail', post_id=self.post.id),
-            self.url('posts:post_create'),
+            url_rev('posts:index'),
+            url_rev('posts:profile', username=self.user.username),
+            url_rev('posts:group_list', slug=self.group.slug),
+            url_rev('posts:post_detail', post_id=self.post.id),
+            url_rev('posts:post_create'),
         ]
 
         templates = [
@@ -123,7 +120,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст group_list -
         список постов, отфильтрованных по группе."""
         response = self.authorized_client.get(
-            self.url('posts:group_list', slug=self.group.slug)
+            url_rev('posts:group_list', slug=self.group.slug)
         )
         self.assertIn(
             response.context['page_obj'].object_list[0],
@@ -134,7 +131,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст profile -
         посты только одного автора."""
         response = self.authorized_client.get(
-            self.url('posts:profile', username=self.user.username)
+            url_rev('posts:profile', username=self.user.username)
         )
         self.assertIn(
             response.context['page_obj'].object_list[0],
@@ -158,7 +155,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст post_edit -
         форма редактирования поста с указанным id."""
         response = self.authorized_client.get(
-            self.url('posts:post_edit', post_id=self.post.id)
+            url_rev('posts:post_edit', post_id=self.post.id)
         )
         form_fields = {
             'text': forms.fields.CharField,
@@ -172,9 +169,9 @@ class PostPagesTests(TestCase):
     def test_new_post_exists(self):
         """Новый пост отображается на указанных страницах."""
         urls = (
-            self.url('posts:index'),
-            self.url('posts:group_list', slug=self.group.slug),
-            self.url('posts:profile', username=self.user.username),
+            url_rev('posts:index'),
+            url_rev('posts:group_list', slug=self.group.slug),
+            url_rev('posts:profile', username=self.user.username),
         )
         for url in urls:
             with self.subTest(url=url):

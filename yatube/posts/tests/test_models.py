@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.core.cache import cache
+from django.test import TestCase
 
 from ..models import Group, Post
 

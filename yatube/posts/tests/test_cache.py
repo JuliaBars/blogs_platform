@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.core.cache import cache
-
 from posts.models import Group, Post
 
+from .factories import post_create
 
 User = get_user_model()
 
@@ -14,16 +14,8 @@ class CacheTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='PostCreator')
-        cls.group = Group.objects.create(
-            title='Название группы',
-            description='Описание группы',
-            slug='group-slug'
-        )
-        cls.post = Post.objects.create(
-            author=cls.user,
-            text='Пост PostCreator',
-            group=cls.group,
-        )
+        cls.group = Group.objects.create(slug='group-slug')
+        cls.post = post_create(cls.user, cls.group)
 
     def setUp(self):
         self.authorized_client = Client()

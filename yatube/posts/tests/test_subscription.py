@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.core.cache import cache
+from posts.models import Follow, Group, Post
 
-from posts.models import Group, Post, Follow
-
+from .factories import post_create
 
 User = get_user_model()
 
@@ -20,11 +20,8 @@ class SubscriptionTests(TestCase):
             user=cls.leader_user
         )
         cls.group = Group.objects.create(slug='group-slug')
-        post = Post.objects.create
-        cls.follower_post = post(author=cls.follow_user,
-                                 text='пост подписчика', group=cls.group)
-        cls.leader_post = post(author=cls.leader_user,
-                               text='пост лидера', group=cls.group)
+        cls.author_post = post_create(cls.follow_user, cls.group)
+        cls.leader_post = post_create(cls.leader_user, cls.group)
 
     def setUp(self):
         self.leader_client = Client()

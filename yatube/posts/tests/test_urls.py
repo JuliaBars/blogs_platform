@@ -1,11 +1,12 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.core.cache import cache
-
 from http import HTTPStatus
 
-from ..models import Group, Post
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.test import Client, TestCase
+from django.urls import reverse
+from posts.models import Group, Post
+
+from .factories import url_rev
 
 User = get_user_model()
 
@@ -15,8 +16,8 @@ class PostURLTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user('user')
-        cls.author = User.objects.create_user(username='author')
-        cls.not_author = User.objects.create_user(username='not_author')
+        cls.author = User.objects.create_user('author')
+        cls.not_author = User.objects.create_user('not_author')
         cls.group = Group.objects.create(slug='group-slug')
         cls.post = Post.objects.create(author=cls.author, text='Пост автора')
 
@@ -29,17 +30,14 @@ class PostURLTests(TestCase):
 
         cache.clear()
 
-    def url(self, url, **kwargs):
-        return reverse(url, kwargs=kwargs)
-
     def test_urls_and_templates_for_public_pages(self):
         """Публичные странички общедоступны
         и используют правильные шаблоны."""
         urls = [
-            self.url('posts:index'),
-            self.url('posts:group_list', slug=self.group.slug),
-            self.url('posts:profile', username=self.user.username),
-            self.url('posts:post_detail', post_id=self.post.id),
+            url_rev('posts:index'),
+            url_rev('posts:group_list', slug=self.group.slug),
+            url_rev('posts:profile', username=self.user.username),
+            url_rev('posts:post_detail', post_id=self.post.id),
         ]
 
         templates = [
@@ -66,8 +64,8 @@ class PostURLTests(TestCase):
         """Странички с приватным доступом используют
         правильный шаблон."""
         urls = [
-            self.url('posts:post_edit', post_id=self.post.id),
-            self.url('posts:post_create'),
+            url_rev('posts:post_edit', post_id=self.post.id),
+            url_rev('posts:post_create'),
         ]
 
         for url in urls:
@@ -79,7 +77,7 @@ class PostURLTests(TestCase):
         """Комментировать посты может только
         авторизованный пользователь."""
         response = self.not_author_client.get(
-            f'/posts/{self.post.id}/comment/',
+            url_rev('posts:add_comment', post_id=self.post.id),
             follow=True
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -89,7 +87,8 @@ class PostURLTests(TestCase):
         пользователь будет перенаправлен на страницу
         авторизации."""
         response = self.guest_client.get(
-            f'/posts/{self.post.id}/comment/', follow=True
+            url_rev('posts:add_comment', post_id=self.post.id),
+            follow=True
         )
         self.assertRedirects(
             response,

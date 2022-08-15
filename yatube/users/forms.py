@@ -1,5 +1,5 @@
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 
 """ Для регистрации на сайте создаем собственную html форму
     на основе класса UserCreationForm """

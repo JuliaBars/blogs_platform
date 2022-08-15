@@ -1,15 +1,16 @@
 import shutil
 import tempfile
 
-from posts.forms import PostForm
-from posts.models import Group, Post, Comment
-from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, override_settings, TestCase
-from django.urls import reverse
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase, override_settings
+from django.urls import reverse
+from posts.forms import PostForm
+from posts.models import Comment, Group, Post
 
+from .factories import post_create
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -20,15 +21,9 @@ class PostCreateFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.group = Group.objects.create(
-            title='Новая группа',
-            slug='group-slug'
-        )
+        cls.group = Group.objects.create(slug='group-slug')
         cls.author = User.objects.create_user(username='author')
-        cls.post = Post.objects.create(
-            author=cls.author,
-            text='Пост автора',
-        )
+        cls.post = post_create(cls.author, cls.group)
         cls.form = PostForm()
 
     @classmethod
