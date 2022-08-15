@@ -4,6 +4,8 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from posts.models import Group, Post
 
+from .factories import url_rev
+
 User = get_user_model()
 
 
@@ -30,16 +32,13 @@ class PaginatorViewsTest(TestCase):
 
         cache.clear()
 
-    def url(self, url, **kwargs):
-        return reverse(url, kwargs=kwargs)
-
     def test_page_contains_not_more_than_ten_records(self):
         """Паджинатор выводит на одну страницу не более 10 постов."""
         reverse_url = {
-            self.url('posts:index'): 10,
-            self.url('posts:group_list', slug=self.group.slug): 10,
-            self.url('posts:profile', username=self.author.username): 10,
-            self.url(
+            url_rev('posts:index'): 10,
+            url_rev('posts:group_list', slug=self.group.slug): 10,
+            url_rev('posts:profile', username=self.author.username): 10,
+            url_rev(
                 'posts:profile', username=self.author.username
             ) + '?page=2': 4,
         }
