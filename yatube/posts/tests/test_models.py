@@ -75,7 +75,7 @@ class PostModelTest(TestCase):
                     group._meta.get_field(field).help_text, expected_value)
 
     def test_post_str_returns_text_no_longer_15_symbols(self):
-        self.assertEqual('Не более 15 сим', f'{PostModelTest.post}')
+        self.assertEqual('Не более 15 сим…', f'{PostModelTest.post}')
 
     def test_models_have_correct__str__(self):
         self.assertEqual(PostModelTest.group.title, str(PostModelTest.group))

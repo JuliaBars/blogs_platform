@@ -22,16 +22,22 @@ SECRET_KEY = 'i(1z1^p0+i@)hmo9ai17!=onp&xyk2unfp&6s7ri2)%7nvy5k9'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'juliabars.pythonanywhere.com',
+    'www.juliabars.pythonanywhere.com',
     'localhost',
     '127.0.0.1',
     '[::1]',
     'testserver',
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.staticfiles',
     'about.apps.AboutConfig',
     'core.apps.CoreConfig',
     'users.apps.UsersConfig',
@@ -41,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'sorl.thumbnail',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'yatube.urls'

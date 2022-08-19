@@ -61,7 +61,11 @@ class Post(models.Model):
         verbose_name_plural = 'Посты'
 
     def __str__(self):
-        return self.text[:15]
+        if len(self.text) < 15:
+            end = ""
+        else:
+            end = "…"
+        return self.text[:15] + end
 
 
 class Comment(models.Model):
