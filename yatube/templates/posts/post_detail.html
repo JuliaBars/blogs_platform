@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}Пост {{ post.text|truncatechars:30 }}{% endblock %}
-{% block header %}Пост пользователя {{ post.author.get_full_name }}{% endblock %}
+{% block header %}Пост пользователя 
+      {% if author.first_name or author.last_name %}
+        {{ post.author.get_full_name }}
+      {% else %}
+        {{ post.author.username }}
+      {% endif %}
+{% endblock %}
 {% block content %}
   
       <div class="row">
@@ -16,7 +22,11 @@
             {% endif %}
             </li>
             <li class="list-group-item">
-              Автор: {{ post.author.get_full_name }}
+              {% if author.first_name or author.last_name %}
+                Автор: {{ post.author.get_full_name }}
+              {% else %}
+                Автор: {{ post.author.username }}
+              {% endif %}
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
               Всего постов автора: {{ n_posts }}

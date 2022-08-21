@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Профайл пользователя {{ author.get_full_name }} {% endblock title %}
-<h1> {% block header %}Все посты пользователя {{ author.get_full_name }} {% endblock header %} </h1>
+<h1> {% block header %}Все посты пользователя 
+    {% if author.first_name or author.last_name %}
+      {{ author.get_full_name }}
+    {% else %}
+      {{ author.username }}
+    {% endif %} 
+  {% endblock header %} </h1>
 {% block content %}
 <div class="mb-5">
   <h3>Всего постов: {{ n_posts }}</h3>
