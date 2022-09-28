@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.forms import ModelForm
 
 from .models import Comment, Post
@@ -11,12 +13,12 @@ class PostForm(ModelForm):
         help_texts = {
             'group': 'Выберите группу',
             'text': 'Введите сообщение',
-            'image': 'Выберите иллюстрацию к посту'
+            'image': 'Выберите иллюстрацию к посту',
         }
         labels = {
             'text': 'Текст сообщения',
             'group': 'Группа',
-            'image': 'Иллюстрация для поста'
+            'image': 'Иллюстрация для поста',
         }
 
 

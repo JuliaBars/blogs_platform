@@ -11,12 +11,12 @@
   <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
-        <div class="card-header">       
-          Новый пост             
+        <div class="card-header">
+          Новый пост
         </div>
-          <div class="card-body">    
+          <div class="card-body">
             <form method="post" enctype="multipart/form-data" action="{% if is_edit %}{% url 'posts:post_edit' post.id %}{% else %}{% url 'posts:post_create' %}{% endif %}">
-              {% csrf_token %}       
+              {% csrf_token %}
               {% for field in form %}
                 {% include 'includes/form_element.html' %}
               {% endfor %}
@@ -31,4 +31,4 @@
       </div>
     </div>
   </div>
-{% endblock content %} 
+{% endblock content %}

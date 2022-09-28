@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Пост {{ post.text|truncatechars:30 }}{% endblock %}
-{% block header %}Пост пользователя 
+{% block header %}Пост пользователя
       {% if author.first_name or author.last_name %}
         {{ post.author.get_full_name }}
       {% else %}
@@ -8,16 +8,16 @@
       {% endif %}
 {% endblock %}
 {% block content %}
-  
+
       <div class="row">
         <aside class="col-12 col-md-3">
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              Дата публикации: {{ post.pub_date|date:"d E Y" }} 
+              Дата публикации: {{ post.pub_date|date:"d E Y" }}
             </li>
             <li class="list-group-item">
             Группа: {{ post.group.title }}
-            {% if post.group %}   
+            {% if post.group %}
               <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
             {% endif %}
             </li>
@@ -48,9 +48,9 @@
             {% include 'includes/comments.html' %}
           </p>
            <!-- эта кнопка видна только автору -->
-           {% if post.author == user %}  
-           <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}" role="button">Редактировать запись</a> 
+           {% if post.author == user %}
+           <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}" role="button">Редактировать запись</a>
            {% endif %}
         </article>
-      </div> 
-{% endblock %} 
+      </div>
+{% endblock %}

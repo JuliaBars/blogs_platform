@@ -1,16 +1,17 @@
+from __future__ import annotations
+
 from io import BytesIO
 
 import pytest
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.files.base import File
+from django.core.paginator import Page
 from django.db.models.query import QuerySet
 from PIL import Image
-from django.core.cache import cache
-
-from posts.models import Post
 from posts.forms import PostForm
-from django.core.paginator import Page
+from posts.models import Post
 
 from tests.utils import get_field_from_context
 
@@ -88,7 +89,8 @@ class TestPostView:
         except ImportError:
             assert False, 'Не найдена форма CommentForm в posts.form'
 
-        comment_form_context = get_field_from_context(response.context, CommentForm)
+        comment_form_context = get_field_from_context(
+            response.context, CommentForm)
         assert comment_form_context is not None, (
             'Проверьте, что передали форму комментария в контекст страницы `/posts/<post_id>/` типа `CommentForm`'
         )
@@ -188,7 +190,7 @@ class TestPostEditView:
     @staticmethod
     def get_image_file(name, ext='png', size=(50, 50), color=(256, 0, 0)):
         file_obj = BytesIO()
-        image = Image.new("RGBA", size=size, color=color)
+        image = Image.new('RGBA', size=size, color=color)
         image.save(file_obj, ext)
         file_obj.seek(0)
         return File(file_obj, name=name)
@@ -207,13 +209,15 @@ class TestPostEditView:
         )
 
         image = self.get_image_file('image2.png')
-        response = user_client.post(url, data={'text': text, 'group': post_with_group.group_id, 'image': image})
+        response = user_client.post(
+            url, data={'text': text, 'group': post_with_group.group_id, 'image': image})
 
         assert response.status_code in (301, 302), (
             'Проверьте, что со страницы `/posts/<post_id>/edit/` '
             'после создания поста перенаправляете на страницу поста'
         )
-        post = Post.objects.filter(author=post_with_group.author, text=text, group=post_with_group.group).first()
+        post = Post.objects.filter(
+            author=post_with_group.author, text=text, group=post_with_group.group).first()
         assert post is not None, (
             'Проверьте, что вы изменили пост при отправки формы на странице `/posts/<post_id>/edit/`'
         )

@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 from io import BytesIO
 
 import pytest
 from django import forms
 from django.core.files.base import File
 from PIL import Image
-
 from posts.models import Post
 
 
@@ -54,7 +55,7 @@ class TestCreateView:
     @staticmethod
     def get_image_file(name, ext='png', size=(50, 50), color=(256, 0, 0)):
         file_obj = BytesIO()
-        image = Image.new("RGBA", size=size, color=color)
+        image = Image.new('RGBA', size=size, color=color)
         image.save(file_obj, ext)
         file_obj.seek(0)
         return File(file_obj, name=name)
@@ -69,7 +70,8 @@ class TestCreateView:
         url = '/create/' if response.status_code in (301, 302) else '/create'
 
         image = self.get_image_file('image.png')
-        response = user_client.post(url, data={'text': text, 'group': group.id, 'image': image})
+        response = user_client.post(
+            url, data={'text': text, 'group': group.id, 'image': image})
 
         assert response.status_code in (301, 302), (
             'Проверьте, что со страницы `/create/` после создания поста, '
@@ -88,7 +90,8 @@ class TestCreateView:
             'Проверьте, что со страницы `/create/` после создания поста, '
             f'перенаправляете на страницу профиля автора `/profile/{user.username}`'
         )
-        post = Post.objects.filter(author=user, text=text, group__isnull=True).first()
+        post = Post.objects.filter(
+            author=user, text=text, group__isnull=True).first()
         assert post is not None, 'Проверьте, что вы сохранили новый пост при отправке формы на странице `/create/`'
         assert response.url == f'/profile/{user.username}/', (
             f'Проверьте, что перенаправляете на страницу профиля автора `/profile/{user.username}`'

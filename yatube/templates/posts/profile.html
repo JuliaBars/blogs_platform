@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Профайл пользователя {{ author.get_full_name }} {% endblock title %}
-<h1> {% block header %}Все посты пользователя 
+<h1> {% block header %}Все посты пользователя
     {% if author.first_name or author.last_name %}
       {{ author.get_full_name }}
     {% else %}
       {{ author.username }}
-    {% endif %} 
+    {% endif %}
   {% endblock header %} </h1>
 {% block content %}
 <div class="mb-5">
@@ -19,7 +19,7 @@
         Отписаться
       </a>
     {% else %}
-        
+
             <a
               class="btn btn-lg btn-primary"
               href="{% url 'posts:profile_follow' author.username %}" role="button"
@@ -40,10 +40,10 @@
             {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
             <img class="card-img" src="{{ im.url }}" />
             {% endthumbnail %}
-      <p>{{ post.text|linebreaksbr }}</p> 
+      <p>{{ post.text|linebreaksbr }}</p>
             <a href="{% url 'posts:post_detail' post.id %}">подробная информация</a>
           </article>
-          {% if post.group %}   
+          {% if post.group %}
             <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы {{ post.group.title }}</a>
           {% endif %}
       {% if not forloop.last %}<hr>{% endif %}

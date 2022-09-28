@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import tempfile
 
 import pytest
 from mixer.backend.django import mixer as _mixer
-from posts.models import Post, Group
+from posts.models import Group, Post
 
 
 @pytest.fixture()
@@ -19,7 +21,7 @@ def mixer():
 
 @pytest.fixture
 def post(user):
-    image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    image = tempfile.NamedTemporaryFile(suffix='.jpg').name
     return Post.objects.create(text='Тестовый пост 1', author=user, image=image)
 
 
@@ -30,7 +32,7 @@ def group():
 
 @pytest.fixture
 def post_with_group(user, group):
-    image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    image = tempfile.NamedTemporaryFile(suffix='.jpg').name
     return Post.objects.create(text='Тестовый пост 2', author=user, group=group, image=image)
 
 

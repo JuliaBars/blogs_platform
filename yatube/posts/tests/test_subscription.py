@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -17,7 +19,7 @@ class SubscriptionTests(TestCase):
         cls.follower = User.objects.create_user('follower')
         cls.subscription = Follow.objects.create(
             author=cls.leader_user,
-            user=cls.follower
+            user=cls.follower,
         )
         cls.group = Group.objects.create(slug='group-slug')
         cls.follower_post = post_create(cls.follower, cls.group)
@@ -37,18 +39,18 @@ class SubscriptionTests(TestCase):
         response = self.follow_client.get(reverse('posts:follow_index'))
         self.assertIn(
             response.context['page_obj'].object_list[0],
-            Post.objects.all()
+            Post.objects.all(),
         )
 
     def test_unfollowing_clean_index_page(self):
         """Если отписаться,
         то посты исчезнут со страницы подписок."""
         response_before = self.follow_client.get(
-            reverse('posts:follow_index')
+            reverse('posts:follow_index'),
         )
         SubscriptionTests.subscription.delete()
         response_after = self.follow_client.get(
-            reverse('posts:follow_index')
+            reverse('posts:follow_index'),
         )
         self.assertNotEqual(response_before.content, response_after.content)
 
@@ -56,7 +58,9 @@ class SubscriptionTests(TestCase):
         """Если пользователь не подписан на автора,
         то постов автора на странице его подписок нет."""
         response = self.leader_client.get(
-            reverse('posts:follow_index')
+            reverse('posts:follow_index'),
         )
-        self.assertNotIn(SubscriptionTests.follower_post,
-                         response.context['page_obj'])
+        self.assertNotIn(
+            SubscriptionTests.follower_post,
+            response.context['page_obj'],
+        )

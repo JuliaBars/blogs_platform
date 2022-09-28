@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
-
 from posts.models import Follow, Group, Post, User
 
+from .decorator import queries_stat
 from .forms import CommentForm, PostForm
 
 SELECT_LIMIT = 10  # Количество постов на страницу
@@ -19,6 +21,7 @@ def paginator(request, posts):
 
 
 @cache_page(20, key_prefix='index_page')
+@queries_stat
 def index(request):
     posts = Post.objects.select_related('group')
     context = {
@@ -46,7 +49,7 @@ def profile(request, username):
         request.user.is_authenticated
         and Follow.objects.filter(
             user=request.user,
-            author=author
+            author=author,
         ).exists()
     )
     context = {
@@ -80,7 +83,7 @@ def post_create(request):
 
     if not request.method == 'POST' or not form.is_valid():
         context = {
-            'form': form
+            'form': form,
         }
         return render(request, 'posts/create_post.html', context)
 
@@ -90,23 +93,34 @@ def post_create(request):
     return redirect('posts:profile', post.author)
 
 
+@login_required
 def post_edit(request, post_id):
     """Страница редактирования постов для авторизованных пользователей."""
     post = get_object_or_404(Post, id=post_id)
 
     form = PostForm(request.POST or None, instance=post)
-    if request.user == post.author and form.is_valid():
-        form.save()
+    if request.method == 'GET':
+        if request.user == post.author:
+            return render(
+                request,
+                'posts/create_post.html',
+                {
+                    'form': form,
+                    'is_edit': True,
+                    'post': post
+                }
+            )
         return redirect('posts:post_detail', post_id=post.id)
-    return render(
-        request,
-        'posts/create_post.html',
-        {
-            'form': form,
-            'is_edit': True,
-            'post': post
-        }
-    )
+
+    if request.method == 'POST':
+        form = PostForm(
+            request.POST,
+            files=request.FILES or None,
+            instance=post
+        )
+        if form.is_valid():
+            form.save()
+        return redirect('posts:post_detail', post_id=post.id)
 
 
 @login_required
@@ -126,7 +140,8 @@ def add_comment(request, post_id):
 def follow_index(request):
     """Страница со списоком постов из подписок пользователя."""
     post_list_follow = Post.objects.filter(
-        author__following__user=request.user)
+        author__following__user=request.user,
+    )
     context = {
         'page_obj': paginator(request, post_list_follow),
     }
@@ -149,6 +164,6 @@ def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     Follow.objects.filter(
         user=request.user,
-        author=author
+        author=author,
     ).delete()
     return redirect('posts:profile', username=username)

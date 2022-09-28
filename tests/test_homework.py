@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import re
 import tempfile
 
 import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth import get_user_model
+from django.core.paginator import Page
 from django.db.models import fields
 from django.template.loader import select_template
-from django.core.paginator import Page
 
 from tests.utils import get_field_from_context
 
@@ -105,7 +107,7 @@ class TestPost:
 
         assert Post.objects.count() == 0
 
-        image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+        image = tempfile.NamedTemporaryFile(suffix='.jpg').name
         post = Post.objects.create(text=text, author=author, image=image)
         assert Post.objects.count() == 1
         assert Post.objects.get(text=text, author=author).pk == post.pk
@@ -184,7 +186,8 @@ class TestGroup:
         description = 'Тестовое описание группы'
 
         assert Group.objects.count() == 0
-        group = Group.objects.create(title=title, slug=slug, description=description)
+        group = Group.objects.create(
+            title=title, slug=slug, description=description)
         assert Group.objects.count() == 1
         assert Group.objects.get(slug=slug).pk == group.pk
 
@@ -243,14 +246,14 @@ class TestGroupView:
 
         assert re.search(
             group.title,
-            html
+            html,
         ), (
             'Отредактируйте HTML-шаблон, не найден заголовок группы '
             '`{% block header %}{{ название_группы }}{% endblock %}`'
         )
         assert re.search(
             r'<\s*p\s*>\s*' + group.description + r'\s*<\s*\/p\s*>',
-            html
+            html,
         ), 'Отредактируйте HTML-шаблон, не найдено описание группы `<p>{{ описание_группы }}</p>`'
 
 

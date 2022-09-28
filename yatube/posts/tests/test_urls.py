@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
@@ -78,7 +80,7 @@ class PostURLTests(TestCase):
         авторизованный пользователь."""
         response = self.not_author_client.get(
             url_rev('posts:add_comment', post_id=self.post.id),
-            follow=True
+            follow=True,
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -88,12 +90,12 @@ class PostURLTests(TestCase):
         авторизации."""
         response = self.guest_client.get(
             url_rev('posts:add_comment', post_id=self.post.id),
-            follow=True
+            follow=True,
         )
         self.assertRedirects(
             response,
             f'{reverse("login")}?next='
-            f'{reverse("posts:add_comment", kwargs={"post_id": self.post.id})}'
+            f'{reverse("posts:add_comment", kwargs={"post_id": self.post.id})}',
         )
 
     def test_create_url_exists_authorized(self):
@@ -107,7 +109,7 @@ class PostURLTests(TestCase):
         пользователя на страницу авторизации."""
         response = self.guest_client.get('/create/', follow=True)
         self.assertRedirects(
-            response, '/auth/login/?next=/create/'
+            response, '/auth/login/?next=/create/',
         )
 
     def test_post_detail_edit_url_exist(self):
@@ -120,8 +122,8 @@ class PostURLTests(TestCase):
         """Страница редактирования поста перенаправит
         не автора поста на страницу поста."""
         response = self.not_author_client.get(
-            f'/posts/{self.post.id}/edit/', follow=True
+            f'/posts/{self.post.id}/edit/', follow=True,
         )
         self.assertRedirects(
-            response, f'/posts/{PostURLTests.post.id}/'
+            response, f'/posts/{PostURLTests.post.id}/',
         )

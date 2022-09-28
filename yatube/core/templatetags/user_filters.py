@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django import template
 
 """ Создаем свои фильтры для любого поля в HTTML коде"""

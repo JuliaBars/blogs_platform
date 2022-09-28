@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth.views import (LoginView, LogoutView,
                                        PasswordChangeDoneView,
                                        PasswordChangeView,
@@ -18,53 +20,53 @@ urlpatterns = [
     path(
         'logout/',
         LogoutView.as_view(template_name='users/logged_out.html'),
-        name='logout'
+        name='logout',
     ),
     path(
         'login/',
         LoginView.as_view(template_name='users/login.html'),
-        name='login'
+        name='login',
     ),
     path(
         'password_reset_form/',
         PasswordResetView.as_view(
-            template_name='users/password_reset_form.html'
+            template_name='users/password_reset_form.html',
         ),
-        name='password_reset_form'
+        name='password_reset_form',
     ),
     path(
         'reset/<uidb64>/<token>/',
         PasswordResetConfirmView.as_view(
-            template_name='users/password_reset_confirm.html'
+            template_name='users/password_reset_confirm.html',
         ),
-        name='reset'
+        name='reset',
     ),
     path(
         'password_reset/done/',
         PasswordResetDoneView.as_view(
-            template_name='users/password_reset_done.html'
+            template_name='users/password_reset_done.html',
         ),
-        name='password_reset_done'
+        name='password_reset_done',
     ),
     path(
         'reset/done/',
         PasswordResetCompleteView.as_view(
-            template_name='users/password_reset_complete.html'
+            template_name='users/password_reset_complete.html',
         ),
-        name='reset_done'
+        name='reset_done',
     ),
     path(
         'password_change/',
         PasswordChangeView.as_view(
-            template_name='users/password_change_form.html'
+            template_name='users/password_change_form.html',
         ),
-        name='password_change'
+        name='password_change',
     ),
     path(
         'password_change/done/',
         PasswordChangeDoneView.as_view(
-            template_name='users/password_change_done.html'
+            template_name='users/password_change_done.html',
         ),
-        name='password_change_done'
+        name='password_change_done',
     ),
 ]

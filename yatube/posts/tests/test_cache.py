@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -31,12 +33,12 @@ class CacheTests(TestCase):
         after_clearing_the_base = response.content
         self.assertEqual(
             with_cache,
-            after_clearing_the_base
+            after_clearing_the_base,
         )
         cache.clear()
         response = self.authorized_client.get(reverse('posts:index'))
         after_clearing_the_cache = response.content
         self.assertNotEqual(
             with_cache,
-            after_clearing_the_cache
+            after_clearing_the_cache,
         )

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.paginator import Page
@@ -21,7 +23,8 @@ class TestProfileView:
             f'Страница `{url_templ}` не найдена, проверьте этот адрес в *urls.py*'
         )
 
-        profile_context = get_field_from_context(response.context, get_user_model())
+        profile_context = get_field_from_context(
+            response.context, get_user_model())
         assert profile_context is not None, f'Проверьте, что передали автора в контекст страницы `{url_templ}`'
 
         page_context = get_field_from_context(response.context, Page)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import TestCase
@@ -33,7 +35,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    post._meta.get_field(field).verbose_name, expected_value)
+                    post._meta.get_field(field).verbose_name, expected_value,
+                )
 
     def test_verbose_name_group(self):
         """Verbose_name в полях модели Group совпадает с ожидаемым."""
@@ -46,7 +49,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    group._meta.get_field(field).verbose_name, expected_value)
+                    group._meta.get_field(field).verbose_name, expected_value,
+                )
 
     def test_help_text(self):
         """help_text в полях модели Post совпадает с ожидаемым."""
@@ -59,7 +63,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_help_texts.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    post._meta.get_field(field).help_text, expected_value)
+                    post._meta.get_field(field).help_text, expected_value,
+                )
 
     def test_help_text_group(self):
         """help_text в полях модели Group совпадает с ожидаемым."""
@@ -72,7 +77,8 @@ class PostModelTest(TestCase):
         for field, expected_value in field_help_texts.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    group._meta.get_field(field).help_text, expected_value)
+                    group._meta.get_field(field).help_text, expected_value,
+                )
 
     def test_post_str_returns_text_no_longer_15_symbols(self):
         self.assertEqual('Не более 15 сим…', f'{PostModelTest.post}')

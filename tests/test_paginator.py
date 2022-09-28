@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import pytest
 from django.core.cache import cache
 from django.core.paginator import Page, Paginator
 
 pytestmark = [pytest.mark.django_db]
+
 
 class TestGroupPaginatorView:
 
@@ -46,7 +49,8 @@ class TestGroupPaginatorView:
         )
 
     def test_profile_paginator_view(self, client, few_posts_with_group):
-        response = client.get(f'/profile/{few_posts_with_group.author.username}/')
+        response = client.get(
+            f'/profile/{few_posts_with_group.author.username}/')
         assert isinstance(response.context['page_obj'].paginator, Paginator), (
             'Проверьте, что переменная `paginator` объекта `page_obj`'
             ' на странице `/profile/<username>/` типа `Paginator`'

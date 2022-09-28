@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 import pytest
@@ -92,7 +94,7 @@ class TestComment:
         )
 
         response = client.post(url, data={'text': 'Новый коммент!'})
-        if not(response.status_code in (301, 302) and response.url.startswith('/auth/login')):
+        if not (response.status_code in (301, 302) and response.url.startswith('/auth/login')):
             assert False, (
                 'Проверьте, что не авторизованного пользователя '
                 '`/posts/<post_id>/comment/` отправляете на страницу авторизации'
@@ -119,7 +121,8 @@ class TestComment:
             'Проверьте, что со страницы `/posts/<post_id>/comment/` '
             'после создания комментария перенаправляете на страницу поста'
         )
-        comment = Comment.objects.filter(text=text, post=post, author=post.author).first()
+        comment = Comment.objects.filter(
+            text=text, post=post, author=post.author).first()
         assert comment is not None, (
             'Проверьте, что вы создаёте новый комментарий `/posts/<post_id>/comment/`'
         )

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import shutil
 import tempfile
 
@@ -36,7 +38,7 @@ class PostPagesTests(TestCase):
         cls.uploaded = SimpleUploadedFile(
             name='picture_for_post.gif',
             content=cls.picture_for_post,
-            content_type='image/gif'
+            content_type='image/gif',
         )
         cls.post = Post.objects.create(
             author=cls.user,
@@ -77,7 +79,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст post_detail -
         один пост, выбранный по id и картинка."""
         response = self.authorized_client.get(
-            url_rev('posts:post_detail', post_id=self.post.id)
+            url_rev('posts:post_detail', post_id=self.post.id),
         )
         first_post = response.context['post']
         post_text = first_post.text
@@ -113,29 +115,29 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(reverse('posts:index'))
         self.assertIn(
             response.context['page_obj'].object_list[0],
-            Post.objects.all()
+            Post.objects.all(),
         )
 
     def test_group_list_page_shows_correct_context(self):
         """Ожидаемый контекст group_list -
         список постов, отфильтрованных по группе."""
         response = self.authorized_client.get(
-            url_rev('posts:group_list', slug=self.group.slug)
+            url_rev('posts:group_list', slug=self.group.slug),
         )
         self.assertIn(
             response.context['page_obj'].object_list[0],
-            PostPagesTests.group.posts.all()
+            PostPagesTests.group.posts.all(),
         )
 
     def test_profile_page_shows_correct_context(self):
         """Ожидаемый контекст profile -
         посты только одного автора."""
         response = self.authorized_client.get(
-            url_rev('posts:profile', username=self.user.username)
+            url_rev('posts:profile', username=self.user.username),
         )
         self.assertIn(
             response.context['page_obj'].object_list[0],
-            PostPagesTests.user.posts.all()
+            PostPagesTests.user.posts.all(),
         )
 
     def test_create_post_page_show_correct_context(self):
@@ -155,7 +157,7 @@ class PostPagesTests(TestCase):
         """Ожидаемый контекст post_edit -
         форма редактирования поста с указанным id."""
         response = self.authorized_client.get(
-            url_rev('posts:post_edit', post_id=self.post.id)
+            url_rev('posts:post_edit', post_id=self.post.id),
         )
         form_fields = {
             'text': forms.fields.CharField,
@@ -178,11 +180,13 @@ class PostPagesTests(TestCase):
                 response = self.authorized_client.get(url)
             self.assertIn(
                 response.context['page_obj'].object_list[0],
-                Post.objects.all()
+                Post.objects.all(),
             )
 
     def test_new_post_absence(self):
         """Пост не попал в группу, для которой не был предназначен."""
         response = self.authorized_client.get(reverse('posts:index'))
-        self.assertNotEqual(response.context.get('page_obj')[0].group,
-                            self.group_2)
+        self.assertNotEqual(
+            response.context.get('page_obj')[0].group,
+            self.group_2,
+        )

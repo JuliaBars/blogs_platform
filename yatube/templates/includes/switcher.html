@@ -3,7 +3,7 @@
   <div class="row my-3">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a 
+        <a
           class="nav-link {% if view_name == 'posts:index' %}active{% endif %}"
           href="{% url 'posts:index' %}"
         >
@@ -11,7 +11,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a 
+        <a
            class="nav-link {% if view_name == 'posts:follow_index' %}active{% endif %}"
            href="{% url 'posts:follow_index' %}"
         >
@@ -20,5 +20,5 @@
       </li>
     </ul>
   </div>
-{% endwith %} 
+{% endwith %}
 {% endif %}

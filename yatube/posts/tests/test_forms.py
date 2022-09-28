@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import shutil
 import tempfile
 
@@ -46,7 +48,7 @@ class PostCreateFormTests(TestCase):
         self.uploaded = SimpleUploadedFile(
             name='Picture_for_post.gif',
             content=self.picture_for_post,
-            content_type='image/gif'
+            content_type='image/gif',
         )
 
         cache.clear()
@@ -65,7 +67,7 @@ class PostCreateFormTests(TestCase):
         self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
-            follow=True
+            follow=True,
         )
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
@@ -73,8 +75,8 @@ class PostCreateFormTests(TestCase):
                 author=PostCreateFormTests.post.author,
                 group=PostCreateFormTests.group.id,
                 text='Новый пост с новым текстом',
-                image='posts/Picture_for_post.gif'
-            ).exists()
+                image='posts/Picture_for_post.gif',
+            ).exists(),
         )
 
     def test_edit_post(self):
@@ -86,14 +88,14 @@ class PostCreateFormTests(TestCase):
         self.authorized_client.post(
             reverse('posts:post_edit', args=[PostCreateFormTests.post.id]),
             data=form_data,
-            follow=True
+            follow=True,
         )
         self.assertTrue(
             Post.objects.filter(
                 id=PostCreateFormTests.post.id,
                 group=PostCreateFormTests.group,
-                text='Отредактированный пост'
-            ).exists()
+                text='Отредактированный пост',
+            ).exists(),
         )
 
     def test_create_comment(self):
@@ -103,13 +105,13 @@ class PostCreateFormTests(TestCase):
         self.authorized_client.post(
             reverse('posts:add_comment', args=[PostCreateFormTests.post.id]),
             data=form_data,
-            follow=True
+            follow=True,
         )
         self.assertEqual(Comment.objects.count(), comments_count + 1)
         self.assertTrue(
             Comment.objects.filter(
                 text='Новый комментарий',
-            ).exists()
+            ).exists(),
         )
 
     def test_group_cant_create_existing_slug(self):
@@ -122,7 +124,7 @@ class PostCreateFormTests(TestCase):
         response = self.guest_client.post(
             reverse('posts:index'),
             data=form_data,
-            follow=True
+            follow=True,
         )
         self.assertEqual(Group.objects.count(), groups_count)
         self.assertEqual(response.status_code, 200)
@@ -140,13 +142,13 @@ class PostCreateFormTests(TestCase):
         response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
-            follow=True
+            follow=True,
         )
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertFormError(
             response,
             'form',
             'text',
-            ['Обязательное поле.']
+            ['Обязательное поле.'],
         )
         self.assertEqual(response.status_code, 200)
