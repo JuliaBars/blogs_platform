@@ -4,6 +4,7 @@ import random
 import string
 
 from django.urls import reverse
+
 from posts.models import Post
 
 
@@ -14,6 +15,7 @@ def random_string(length):
 
 
 def post_create(user, group):
+    """Упрощенное создание постов"""
     text = random_string(8)
     return Post.objects.create(text=text, author=user, group=group)
 

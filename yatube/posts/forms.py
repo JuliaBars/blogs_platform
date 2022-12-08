@@ -23,7 +23,7 @@ class PostForm(ModelForm):
 
 
 class CommentForm(ModelForm):
-    """Форма создания комментариев."""
+    """Форма создания комментариев"""
     class Meta:
         model = Comment
         fields = ('text',)

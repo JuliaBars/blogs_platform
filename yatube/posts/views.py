@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
+
 from posts.models import Follow, Group, Post, User
 
-from .decorator import queries_stat
+# from .decorator import queries_stat
 from .forms import CommentForm, PostForm
 
 SELECT_LIMIT = 10  # Количество постов на страницу
@@ -21,9 +22,9 @@ def paginator(request, posts):
 
 
 @cache_page(20, key_prefix='index_page')
-@queries_stat
+# @queries_stat
 def index(request):
-    posts = Post.objects.select_related('group')
+    posts = Post.objects.prefetch_related('group', 'author')
     context = {
         'page_obj': paginator(request, posts),
     }
@@ -32,7 +33,7 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = group.posts.all()
+    posts = group.posts.select_related('author')
     context = {
         'group': group,
         'page_obj': paginator(request, posts),
@@ -43,7 +44,7 @@ def group_posts(request, slug):
 def profile(request, username):
     """Персональная страница авторизованного пользователя."""
     author = get_object_or_404(User, username=username)
-    posts = author.posts.all()
+    posts = author.posts.select_related('group')
     n_posts = posts.count()
     following = (
         request.user.is_authenticated
@@ -138,7 +139,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    """Страница со списоком постов из подписок пользователя."""
+    """Страница со списком постов из подписок пользователя."""
     post_list_follow = Post.objects.filter(
         author__following__user=request.user,
     )

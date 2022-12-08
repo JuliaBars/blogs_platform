@@ -154,3 +154,5 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import django.db.models.deletion
-import posts.validators
 from django.conf import settings
 from django.db import migrations, models
+
+import posts.validators
 
 
 class Migration(migrations.Migration):
