@@ -21,7 +21,7 @@ def paginator(request, posts):
     return page_obj
 
 
-# @cache_page(20, key_prefix='index_page')
+@cache_page(20, key_prefix='index_page')
 # @queries_stat
 def index(request):
     posts = Post.objects.prefetch_related('group', 'author')
@@ -168,3 +168,17 @@ def profile_unfollow(request, username):
         author=author,
     ).delete()
     return redirect('posts:profile', username=username)
+
+
+def post_search(request):
+    search_req = request.GET.get('s', '')
+    search_req = search_req.title()
+    if search_req:
+        posts = Post.objects.filter(text__icontains=search_req)
+    else:
+        posts = Post.objects.select_related('group', 'author')
+
+    return render(
+        request, 'posts/index.html',
+        {'page_obj': paginator(request, posts)}
+    )
