@@ -21,7 +21,7 @@ def paginator(request, posts):
     return page_obj
 
 
-@cache_page(20, key_prefix='index_page')
+# @cache_page(20, key_prefix='index_page')
 # @queries_stat
 def index(request):
     posts = Post.objects.prefetch_related('group', 'author')

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -49,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'sorl.thumbnail',
+    'ckeditor',
+    # 'django_redis',
     # 'debug_toolbar',
 ]
 
@@ -152,6 +155,9 @@ CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        # 'BACKEND': 'django_redis.cache.RedisCache',
+        # 'LOCATION': 'redis://127/0/0/1:6379/hw05',
+        # 'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     },
 }
 

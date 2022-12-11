@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from django.contrib import admin
+from django.db import models
+from ckeditor.widgets import CKEditorWidget
 
 from .models import Comment, Follow, Group, Post
 
@@ -11,6 +13,9 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('text',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget}
+    }
 
 
 admin.site.register(Post, PostAdmin)
