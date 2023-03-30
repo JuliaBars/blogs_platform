@@ -20,15 +20,13 @@ class PaginatorViewsTest(TestCase):
             slug='group-slug',
         )
         cls.author = User.objects.create_user('post_author')
-        cls.posts = []
-        for i in range(14):
-            cls.posts.append(
-                Post.objects.create(
-                    text=f'Текст нового поста {i}',
-                    author=cls.author,
-                    group=cls.group,
-                ),
-            )
+        Post.objects.bulk_create(
+            Post(
+                text=f'Текст нового поста {i}',
+                author=cls.author,
+                group=cls.group,
+            ) for i in range(14)
+        )
 
     def setUp(self):
         self.authorized_author = Client()

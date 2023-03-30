@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
+from core.views import page_not_found
 
 from posts.models import Group, Post
 
@@ -23,6 +24,7 @@ class PostURLTests(TestCase):
         cls.not_author = User.objects.create_user('not_author')
         cls.group = Group.objects.create(slug='group-slug')
         cls.post = Post.objects.create(author=cls.author, text='Пост автора')
+        cls.wtf = page_not_found
 
     def setUp(self) -> None:
         self.guest_client = Client()
@@ -128,3 +130,12 @@ class PostURLTests(TestCase):
         self.assertRedirects(
             response, f'/posts/{PostURLTests.post.id}/',
         )
+
+    def test_very_bad_request_page_works_properly(self):
+        """Несуществующая страница отдает код 404
+        и кастомный шаблон."""
+        response = self.guest_client.get(PostURLTests.wtf)
+        print('\n>>>', response.request['PATH_INFO'])
+        print('\n>>>', response.request)
+        self.assertTemplateUsed(response, 'core/404.html')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
