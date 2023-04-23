@@ -2,16 +2,12 @@ from __future__ import annotations
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.shortcuts import render
-from posts.models import Follow
-from posts.models import Group
-from posts.models import Post
-from posts.models import User
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CommentForm
-from .forms import PostForm
+from posts.models import Follow, Group, Post, User
+
+from .forms import CommentForm, PostForm
+
 # from .decorator import queries_stat
 
 SELECT_LIMIT = 10  # Количество постов на страницу

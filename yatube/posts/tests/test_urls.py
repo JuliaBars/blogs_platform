@@ -6,8 +6,8 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
-from core.views import page_not_found
 
+from core.views import page_not_found
 from posts.models import Group, Post
 
 from .factories import url_rev
