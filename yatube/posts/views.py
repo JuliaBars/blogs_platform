@@ -84,7 +84,6 @@ def post_detail(request, post_id):
 def post_create(request):
     """Страница создания постов для авторизованных пользователей."""
     form = PostForm(request.POST or None, files=request.FILES or None)
-
     if not request.method == 'POST' or not form.is_valid():
         context = {
             'form': form,
@@ -102,29 +101,23 @@ def post_edit(request, post_id):
     """Страница редактирования постов для авторизованных пользователей."""
     post = get_object_or_404(Post, id=post_id)
 
-    form = PostForm(request.POST or None, instance=post)
-    if request.method == 'GET':
-        if request.user == post.author:
-            return render(
-                request,
-                'posts/create_post.html',
-                {
-                    'form': form,
-                    'is_edit': True,
-                    'post': post,
-                },
-            )
+    if request.user != post.author:
         return redirect('posts:post_detail', post_id=post.id)
 
-    if request.method == 'POST':
-        form = PostForm(
-            request.POST,
-            files=request.FILES or None,
-            instance=post,
-        )
-        if form.is_valid():
-            form.save()
+    form = PostForm(
+        request.POST or None, instance=post,
+        files=request.FILES or None,
+    )
+    if form.is_valid():
+        form.save()
         return redirect('posts:post_detail', post_id=post.id)
+
+    context = {
+        'form': form,
+        'is_edit': True,
+        'post': post,
+    }
+    return render(request, 'posts/create_post.html', context)
 
 
 @login_required
